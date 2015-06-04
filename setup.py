@@ -1,23 +1,40 @@
+import os
+import sys
+
 from distutils.core import setup, Extension
+
+
+if 'JAVA_HOME' not in os.environ:
+    raise ValueError('JAVA_HOME not defined in environment')
+
+
+java_home = os.environ['JAVA_HOME']
+
+
+def java_directory_containing(filename):
+    for root, dirs, files in os.walk(java_home):
+        for file in files:
+            if file == 'jni.h':
+                return root
+
+    print('Unable to find {}'.format(filename))
+    sys.exit(1)
+
+
+java_include = java_directory_containing('jni.h')
+java_server = java_directory_containing('libjvm.so')
+
 
 pyhdfs = Extension('pyhdfs',
         sources=['src/pyhdfs.c'],
-        include_dirs=[
-            'src',
-            '/usr/lib/jvm/java-6-sun/include/',
-            '/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.79-2.5.5.0.fc20.x86_64/include',
-            ],
+        include_dirs=['src', java_include],
         libraries=['hdfs'],
         library_dirs=['lib'],
-        runtime_library_dirs=[
-            '/usr/local/lib/pyhdfs',
-            '/usr/lib/jvm/java-6-sun/jre/lib/i386/server',
-            '/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.79-2.5.5.0.fc20.x86_64/jre/lib/amd64/server',
-            ],
+        runtime_library_dirs=[java_server],
         )
 
 setup(name='python-hdfs',
-        version='0.2',
+        version='0.3',
         author='Deng Zhiping, Joshua Downer',
         author_email='joshua.downer@gmail.com',
         description="Python wrapper for libhdfs",
@@ -25,7 +42,6 @@ setup(name='python-hdfs',
         url="https://github.com/jdowner/libpyhdfs",
         license="Apache License 2.0",
         platforms=["GNU/Linux"],
-        ext_modules=[pyhdfs],
         classifiers=[
             'Development Status :: 3 - Alpha',
             'Operating System :: Unix',
@@ -34,4 +50,5 @@ setup(name='python-hdfs',
             'Topic :: System :: Filesystems',
             'Topic :: Utilities',
             ],
+        ext_modules=[pyhdfs],
         )
