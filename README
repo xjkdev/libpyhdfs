@@ -1,28 +1,28 @@
-				libpyhdfs
+  libpyhdfs
+  ==================================================
 
-  What is it?
-  -----------
-  
+  Introduction
+  --------------------------------------------------
+
   libpyhdfs is a Python extension module which wraps the C API in libhdfs to
   access Hadoop file system.
 
   Sample usage:
-	#!/usr/bin/env python
-	import pyhdfs
 
-	fs = pyhdfs.connect("192.168.1.1", 9000)
-	pyhdfs.get(fs, "/path/to/remote-src-file", "/path/to/local-file")
+    #!/usr/bin/env python
+    import pyhdfs
 
-	f = pyhdfs.open(fs, "/test/xxx", "w")
-	pyhdfs.write(fs, f, "fuck\0gfw\n")
-	pyhdfs.close(fs, f)
+    fs = pyhdfs.connect("192.168.1.1", 9000)
+    pyhdfs.get(fs, "/path/to/remote-src-file", "/path/to/local-dst-file")
 
-	pyhdfs.disconnect(fs)
+    f = pyhdfs.open(fs, "/user/wormtongue/quotes.txt", "w")
+    pyhdfs.write(fs, f, "Why do you lay these troubles on an already troubled mind?")
+    pyhdfs.close(fs, f)
+
+    pyhdfs.disconnect(fs)
 
 
   Installation
-  ------------
+  --------------------------------------------------
 
   Please see the file called INSTALL.
-  
-
