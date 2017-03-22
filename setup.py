@@ -3,7 +3,6 @@ import sys
 
 from distutils.core import setup, Extension
 
-
 if 'JAVA_HOME' not in os.environ:
     raise ValueError('JAVA_HOME not defined in environment')
 
@@ -26,6 +25,11 @@ def java_directory_containing(filename):
     print('Unable to find {}'.format(filename))
     sys.exit(1)
 
+libjvm = 'libjvm.so'
+libhdfs = 'libhdfs.so'
+if sys.platform == 'darwin':
+    libjvm = 'libjvm.dylib'
+    libhdfs = 'libhdfs.dylib'
 
 pyhdfs = Extension('pyhdfs',
         sources=['src/pyhdfs.c'],
@@ -37,23 +41,24 @@ pyhdfs = Extension('pyhdfs',
         libraries=['hdfs'],
         library_dirs=['lib'],
         runtime_library_dirs=[
-            java_directory_containing('libjvm.so'),
+            java_directory_containing(libjvm),
             find_directory_containing((
                 '/usr/lib',
                 '/usr/lib64',
                 '/etc',
+                'lib'
                 ),
-                'libhdfs.so'),
+                libhdfs),
             ],
         )
 
 setup(name='python-hdfs',
-        version='0.4',
-        author='Deng Zhiping, Joshua Downer',
-        author_email='joshua.downer@gmail.com',
+        version='0.4.1',
+        author='Jake Xie, Deng Zhiping, Joshua Downer',
+        author_email='xjk2008@gmail.com',
         description="Python wrapper for libhdfs",
         long_description=(open('README').read()),
-        url="https://github.com/jdowner/libpyhdfs",
+        url="https://github.com/xjkdev/pyhdfs",
         license="Apache License 2.0",
         platforms=["GNU/Linux"],
         classifiers=[

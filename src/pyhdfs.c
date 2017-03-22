@@ -50,8 +50,8 @@ renable_stderr(void)
 char *remove_host_prefix(char *path) 
 {
 	if (strncmp(path, "hdfs://", 7) == 0) {
-		char *start = rawmemchr(path + 7, '/');
-		char *end = rawmemchr(path, '\0');
+		char *start = memchr(path + 7, '/',1024);
+		char *end = memchr(path, '\0',1024);
 		memmove(path, start, end - start + 1);
 	}
 	return path;
@@ -85,7 +85,7 @@ char *hdfs_realpath(hdfsFS fs, const char *name)
 			goto error;
 		}
 		remove_host_prefix(rpath);
-		dest = rawmemchr(rpath, '\0');
+		dest = memchr(rpath, '\0',path_max);
 	} else {
 		rpath[0] = '/';
 		dest = rpath + 1;
@@ -131,8 +131,8 @@ char *hdfs_realpath(hdfsFS fs, const char *name)
 
 				dest = rpath + dest_offset;
 			}
-				  
-			dest = mempcpy(dest, start, end - start);
+			memcpy(dest, start, end - start);
+			dest = dest + (end - start);
 			*dest = '\0';
 		}
 	}
